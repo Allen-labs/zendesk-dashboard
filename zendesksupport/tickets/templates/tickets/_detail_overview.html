@@ -1,0 +1,180 @@
+{% load i18n %}
+{% comment %}
+| File Name: _detail_overview.html
+|
+| This file is created to display the detail view
+|
+| Copy Right: 2016@nephoscale.com
+|
+| Start Date: 16th July 2016
+{% endcomment %} 
+<div class="container ticket-detail">
+    <div class="row">
+
+        <div class="col-md-6 ticket-detail-section">
+            <div class="ticket-detail-title"><strong>Status:</strong></div>
+            <div class="ticket-detail-value"> {{ ticket.status|upper }} </div>
+        </div>
+        <div class="col-md-6 ticket-detail-section">
+            <div class="ticket-detail-title"><strong>Priority:</strong></div>
+            <div class="ticket-detail-value">{{ ticket.priority | upper }}</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 ticket-detail-section">
+            <div class="ticket-detail-title"><strong>Created At:</strong></div>
+            <div class="ticket-detail-value">
+                <span class="cursor-hover-title" title="{{ ticket.created }}">before {{ ticket.created|timesince }}</span>
+            </div>
+        </div>
+        <div class="col-md-6 ticket-detail-section"> 
+            <div class="ticket-detail-title"><strong>Last updated:</strong></div>
+            <div class="ticket-detail-value">
+                <span class="cursor-hover-title" title="{{ ticket.updated }}">before {{ ticket.updated|timesince }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 ticket-detail-section">
+            <div class="ticket-detail-title"><strong>Created By:</strong></div>
+            <div class="ticket-detail-value">
+                <span class="ticket-tooltip-container">
+                    <u>{{ ticket.requester.name }}</u>
+                    <div class="profile-tooltip">
+                        <div class="row">
+                            <div class="col-md-3">
+                                {% if ticket.requester.photo.content_url %}
+                                    <img class="img-thumbnail" src="{{ ticket.assignee.photo.content_url }}">
+                                {% else %}
+                                    <div class="zendesk-profile-avatar">{{ ticket.requester.name }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <h4>{{ ticket.requester.name }}</h4>
+                                <h5>{% if ticket.requester.email %} {{ ticket.requester.email }} {% else %} No email address found. {% endif %}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-6 ticket-detail-section">
+            <div class="ticket-detail-title"><strong>Assigned To:</strong></div>
+            <div class="ticket-detail-value">
+                <span class="ticket-tooltip-container">
+                    <u>{{ ticket.assignee.name }}</u>
+                    <div class="profile-tooltip">
+                        <div class="row">
+                            <div class="col-md-3">
+                                {% if ticket.assignee.photo.content_url %}
+                                    <img class="img-thumbnail" src="{{ ticket.assignee.photo.content_url }}">
+                                {% else %}
+                                    <div class="zendesk-profile-avatar">{{ ticket.assignee.name }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <h4>{{ ticket.assignee.name }}</h4>
+                                <h5>{% if ticket.assignee.email %} {{ ticket.assignee.email }}  {% else %} No email address available. {% endif %}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 ticket-detail-section">
+            <div class="ticket-description-title">
+                <strong>Description</strong>
+            </div>
+            <div class="ticket-description-content">
+                {{ ticket.description }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container add-comment-form-container">
+    <div class="row">
+        <div class="col-md-12">
+            <form role="form" method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="radio">
+                        <label class="radio-inline"><input type="radio" name="comment_privacy" value="true" checked>Public Reply</label>
+                            {% if role_check_flag %}
+                                <label class="radio-inline"><input type="radio" name="comment_privacy" value ="false">Internal Note</label>
+                            {% endif %}
+                            <!--<label class="radio-inline"><input type="radio" name="comment_privacy" value ="false">Internal Note</label>-->
+                    </div>
+                    
+                    <textarea name="comment" placeholder="Add comment to ticket" class="form-control" required></textarea>
+                    
+                    <!-- Newly added for attachment section -->
+                    <div class="attachment_upload_section" style= "margin-top: 1%; margin-bottom: 1%;">
+                        <input type="file" name="attachment" />
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Add Comment">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container comment-section-container">
+    {% for comment in comments %}
+        {% if comment.created_at != ticket.created_at %}
+            {% if comment.public == True %}
+               <div class="row comment-section">
+                <div class="col-md-12">
+                    <div class="comment-author">
+                        <div class="zendesk-avatar">{{ comment.author.name }}</div>
+                        <a href="javascript:void(0);">{{ comment.author.name }}</a> added a comment before
+                        <span class="cursor-hover-title" title="{{ ticket.updated }}">{{ ticket.updated|timesince }}</span>
+                    </div>
+                    <div class="comment-desc">{{ comment.body }}</div>
+                    {% if comment.attachments %}
+                        <div class="comment-attachment">
+                            <ul class="attachments">
+                                {% for file in comment.attachments %}
+                                    <li style ="background-color: #f4f4f4; width: 112px; line-height: 16px; border-radius: 4px; overflow: hidden; padding: 4px 10px; display: inline-block;">
+                                        <a class="attachment" style="padding: 4px 8px;" href="{{file.content_url}}">
+                                            <i class="fa fa-file fa-lg" style = "opacity:0.2;"></i> {{ file.file_name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+             </div>
+            {% elif comment.public != True and role_check_flag  %}
+              <div class="row comment-section">
+                <div class="col-md-12 internal-note">
+                    <div class="comment-author">
+                        <div class="zendesk-avatar">{{ comment.author.name }}</div>
+                        <a href="javascript:void(0);">{{ comment.author.name }}</a> added a comment before
+                        <span class="cursor-hover-title" title="{{ ticket.updated }}">{{ ticket.updated|timesince }}</span>
+                    </div>
+                    <div class="comment-desc">{{ comment.body }}</div>
+                    {% if comment.attachments %}
+                        <div class="comment-attachment">
+                            <ul class="attachments">
+                                {% for file in comment.attachments %}
+                                    <li style ="background-color: #f4f4f4; width: 96px; line-height: 16px; border-radius: 4px; overflow: hidden; padding: 4px 10px; display: inline-block;">
+                                        <a class="attachment" style="padding: 4px 8px;" href="{{file.content_url}}">
+                                            <i class="fa fa-file fa-lg" style = "opacity:0.2;"></i> {{ file.file_name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                </div>
+             </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>

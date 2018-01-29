@@ -1,0 +1,30 @@
+{% extends 'zendesk_support_dashboard/tickets/zendesksupportbase.html' %}
+{% load i18n %}
+
+{% comment %}
+# File name: index.html
+#
+# Start Date: 11th July 2016
+#
+# Copyright: 2016@nephoscale
+#
+# This file is for displaying ticket list with pagination
+{% endcomment %}
+
+{% block title %}{% trans page_title %}{% endblock %}
+
+{% block page_header %}
+  {% include "horizon/common/_domain_page_header.html" with title=page_title %}
+{% endblock page_header %}
+<hr class="page_header">
+{% block main %}
+    <div class="row">
+        <div class="col-md-12">
+            {{ tab_group.render }}
+            <p>
+                <small>** All date and times are in <b>GMT{{ request.session.zendesksupport.timezone_offset }}</b>.</small>
+            </p>
+        </div>
+    </div>
+{% endblock %}
+

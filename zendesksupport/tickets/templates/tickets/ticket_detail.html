@@ -1,0 +1,42 @@
+{% extends 'zendesk_support_dashboard/tickets/zendesksupportbase.html' %}
+{% load i18n %}
+{% comment %}
+* File Name: ticket_detail.html
+*
+* Template Name: zendesk_support_dashboard/ticket/ticket_detail.html
+*
+* This file is created to handle the view of the zendesk ticket detail
+*
+* Start Date: 16th July 2016
+*
+* Copyright: 2016@NephoScale.com
+{% endcomment %}
+{% block title %}{% trans page_title %}{% endblock %}
+
+{% block page_header %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" style="margin:10px;">
+                {% url 'horizon:zendesk_support_dashboard:tickets:index' as the_url %}
+                <a class="btn btn-default" href="{{ the_url }}"><i class="glyphicon glyphicon-arrow-left"></i> My Ticket List</a>
+            </div>
+            <div class="col-md-12">
+                {% include "horizon/common/_page_header.html"  with title=page_title %}
+            </div>
+        </div>
+    </div>
+{% endblock page_header %}
+{% block main %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% else %}
+                {% include "zendesk_support_dashboard/tickets/_detail_overview.html" %}
+            {% endif %}
+        </div>
+    <div>
+{% endblock %}
+

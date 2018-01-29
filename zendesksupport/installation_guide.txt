@@ -1,0 +1,88 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+# GUIDE TO INSTALL THE ZENDESKSUPPORT PLUGIN IN HORIZON   #
+#                                                         #
+# KEYSTONE VERSION: V2.0                                  #
+###########################################################
+
+ADD THE FOLLOWING SETTINGS TO YOUR settings.py FILE
+----------------------------------------------------
+
+ZENDESKSUPPORT_ENABLED   = True/False
+ZENDESK_ADMIN_EMAIL      = "Your zendesk email. It should have admin privillage"
+ZENDESK_ADMIN_PASSWORD   = "Zendesk admin login password"
+ZENDESK_ADMIN_TIMEZONE   = "The timezone of your zendesk account. It should be one of the pytz pakage timezone."
+ZENDESK_SUBDOMAIN        = "Your zendesk subdomain"
+
+
+For keystone auth version 2
+-----------------------------
+KEYSTONE_AUTH_VERSION    = "v2"
+KEYSTONE_ADMIN_USERNAME  = "user name of the admin"  [its optional if KEYSTONE_ADMIN_USER_ID is given]
+KEYSTONE_ADMIN_USER_ID   = "User id of the admin" [its optional if KEYSTONE_ADMIN_USERNAME is given]
+KEYSTONE_ADMIN_PASSWORD  = "password of the admin"
+KEYSTONE_ADMIN_AUTH_URL  = "auth url with v2.0 extension like http://example:35357/v2.0"
+KEYSTONE_ADMIN_TENANT_ID = "ADMIN project id"    [its optional if KEYSTONE_ADMIN_TENANT_NAME is given]
+KEYSTONE_ADMIN_TENANT_NAME = "ADMIN PROJECT NAME"  [its optional if KEYSTONE_ADMIN_TENANT_ID is given]
+
+For keystone with version 2
+-----------------------------------
+KEYSTONE_AUTH_VERSION              = "v3"
+KEYSTONE_ADMIN_PROJECT_ID          = 'Admin project id'          [its optional if KEYSTONE_ADMIN_PROJECT_NAME is given]
+KEYSTONE_ADMIN_PROJECT_NAME        = 'Admin project name'        [its optional if KEYSTONE_ADMIN_PROJECT_ID   is given]
+KEYSTONE_ADMIN_PROJECT_DOMAIN_ID   = 'Admin project domain id'   [its optional if KEYSTONE_ADMIN_PROJECT_DOMAIN_NAME is given]
+KEYSTONE_ADMIN_PROJECT_DOMAIN_NAME = 'Admin project domain name' [its optional if KEYSTONE_ADMIN_PROJECT_DOMAIN_ID is given]
+KEYSTONE_ADMIN_USER_ID             = "User id of the admin"      [its optional if KEYSTONE_ADMIN_USERNAME is given]
+KEYSTONE_ADMIN_USERNAME            = "user name of the admin"    [its optional if KEYSTONE_ADMIN_USER_ID is given]
+KEYSTONE_ADMIN_USER_DOMAIN_ID      = "admin user's domain id"    [its optional if KEYSTONE_ADMIN_USER_DOMAIN_NAME is given]
+KEYSTONE_ADMIN_USER_DOMAIN_NAME    = 'Admin user domain name'    [its optional if KEYSTONE_ADMIN_USER_DOMAIN_ID is given]
+KEYSTONE_ADMIN_AUTH_URL            = "auth url with v3 extension like http://example:35357/v3/"
+
+
+____________________________
+|                          |
+| NOTE  #1                 |
+|__________________________|_
+FOR Configuring ZENDESK_SUBDOMAIN value:
+do not provide the full url, just provide the subdomain name. for example if your full url for zendeskdomain is  https://yourcompany.zendesk.com, then your subdomain is yourcompany
+
+ ____________________________
+|                           |
+| NOTE  #2                  |
+|___________________________|_
+FOR Configuring ZENDESK_ADMIN_TIMEZONE value:
+As zendesk uses a diffrent format of time, it's not possible to handel in pytz. So please provide a valid timezone which is  in pytz and is equivalent to your zendesk timezone.
+
+
+
+
+
+Sample Configuration For keystone version 2.0
+--------------------------------------------
+ZENDESKSUPPORT_ENABLED   = True
+ZENDESK_ADMIN_EMAIL      = "iamsujitpatra28@gmail.com"
+ZENDESK_ADMIN_PASSWORD   = "Dinesh@123"
+ZENDESK_ADMIN_TIMEZONE   = "UTC"
+ZENDESK_SUBDOMAIN        = "testnepho"
+KEYSTONE_AUTH_VERSION    = "v2"
+KEYSTONE_ADMIN_USERNAME  = "admin"
+KEYSTONE_ADMIN_PASSWORD  = "demo"
+KEYSTONE_ADMIN_AUTH_URL  = "http://198.100.181.66:35357/v2.0/"
+
+
+Sample Configuration For keystone version 3
+------------------------------------------------
+ZENDESKSUPPORT_ENABLED   = True
+ZENDESK_ADMIN_EMAIL      = "iamsujitpatra28@gmail.com"
+ZENDESK_ADMIN_PASSWORD   = "Dinesh@123"
+ZENDESK_ADMIN_TIMEZONE   = "UTC"
+ZENDESK_SUBDOMAIN        = "testnepho"
+KEYSTONE_ADMIN_PROJECT_NAME         = 'admin'
+KEYSTONE_ADMIN_PROJECT_DOMAIN_ID    = 'default'
+KEYSTONE_ADMIN_USERNAME             = 'admin'
+KEYSTONE_ADMIN_USER_DOMAIN_ID       = 'default'
+KEYSTONE_ADMIN_AUTH_URL             = "http://198.100.181.66:35357/v3/"
+
+
+
+Copy the _6000_zendesksupport.py to your openstackdashboard enabled folder.
+

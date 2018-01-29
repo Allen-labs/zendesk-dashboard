@@ -1,0 +1,16 @@
+{% extends 'zendesk_support_dashboard/tickets/zendesksupportbase.html' %}
+{% load i18n %}
+{% comment %}
+# | File Name: create_ticket.html
+# |
+# | Template responsible to display the ticket create form
+# |
+# | copyright: 2016@nephoscale.com
+# | 
+# | Start Date: 27th July 2016
+{% endcomment %}
+{% block title %}{% trans "New Customer Support Ticket" %}{% endblock %}
+{% block page_header %}
+  {% include "horizon/common/_page_header.html" with title=_("Open a Customer Support Ticket") %}
+{% endblock page_header %}
+

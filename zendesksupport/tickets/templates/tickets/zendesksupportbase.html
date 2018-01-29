@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% comment %}
+* File Name: ticket_detail.html
+*
+* Template Name: zendesk_support_dashboard/ticket/ticket_detail.html
+*
+* This file is created to handle the view of the zendesk ticket detail
+*
+* Start Date: 16th July 2016
+*
+* Copyright: 2016@NephoScale.com
+{% endcomment %}
+
+{% block title %}{% trans page_title %}{% endblock %}
+{% block custom_js_files %}
+    <script src="{{ STATIC_URL }}zendesksupport/jquery.nameBadges.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{ STATIC_URL }}zendesksupport/zendesksupport.js" type='text/javascript' charset='utf-8'></script>
+{% endblock %}
+
+{% block page_header %}{% endblock page_header %}
+
+{% block main %}{% endblock %}
+

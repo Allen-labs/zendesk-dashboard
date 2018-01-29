@@ -1,0 +1,126 @@
+/**
+* File Name: zendesksupport.scss
+*
+* This file is created to design the zendesksupport dashboard
+*
+* @Copyright: 2016 @ Nephoscale
+*
+* @Start Date: 18th July 2016
+*/
+.ticket-detail {
+    border-top:    #e6e6e6 1px solid;
+    border-bottom: #e6e6e6 1px solid;
+}
+
+.ticket-detail-section {
+    padding: 10px;
+}
+
+.ticket-detail-title {
+    font-weight: bold;
+    width: 100px;
+}
+
+.ticket-detail-title, .ticket-detail-value {
+    display: inline-block;
+}
+
+.ticket-description-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.ticket-tooltip-container {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.ticket-tooltip-container:hover .profile-tooltip {
+    display: block;
+}
+
+.ticket-tooltip-container .profile-tooltip {
+    position: absolute;
+    min-width: 350px;
+    max-width: 400px;
+    top: 20px;
+    left: 0px;
+    right: 0px;
+    border: #eee 2px solid;
+    border-radius: 5px;
+    box-shadow: -2px 3px 2px rgba(0,0,0,0.6);
+    display: none;
+    background: #fff;
+    z-index: 9999;
+}
+
+.ticket-tooltip-container .profile-tooltip:before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 22px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+    border: #eee 2px solid;
+    border-bottom: 0px;
+    border-right: 0px;
+}
+
+.comment-author {
+    margin-bottom: 10px;
+    color: #999;
+}
+
+.cursor-hover-title {
+    cursor: pointer;
+}
+
+.add-comment-form-container {
+    margin-top: 0px;
+    padding-top: 10px;
+    border-bottom: #eee 2px solid;
+    background: #f1f1f1;
+}
+.comment-section {
+    border-bottom: #ccc 1px solid;
+    padding: 10px;
+    background: #fff;
+    cursor: pointer;
+    -webkit-transition: background 0.2s;
+    -moz-transition: background 0.2s;
+    -ms-transition: background 0.2s;
+    -o-transition: background 0.2s;
+    transition: background 0.2s;
+}
+
+.comment-section:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.comment-desc {
+    font-size: 14px;
+    padding-left: 5% !important; 
+    margin-bottom: 10px !important;
+}
+
+table#tickets .multi_select_column {
+    display: none;
+}
+
+.internal-note {
+    background-color: #fff6d9;
+    border: 1px solid #efdaa3;
+    border-radius: 6.5px;
+    padding: 0 1% 1% 1%;
+}

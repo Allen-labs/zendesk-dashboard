@@ -1,0 +1,17 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+{% comment %}
+# | File Name: _create_ticket.html
+# |
+# | Template responsible to display the ticket create form
+# |
+# | copyright: 2016@nephoscale.com
+# | 
+# | Start Date: 27th July 2016
+{% endcomment %}
+{% block form_attrs %}enctype="multipart/form-data"{% endblock %}
+{% block modal-body-right %}
+    <p>{% trans "Facing any issue with our service?" %}</p>
+    <p>{% trans "Open a customer support ticket. We will get back to you soon." %}</p>
+{% endblock %}
+
