@@ -24,6 +24,8 @@ from keystoneauth1 import identity
 from keystoneauth1 import session
 from django.conf import settings
 from keystoneclient.v2_0.tenants import Tenant
+import os
+from django.core.files.base import ContentFile
 
 #Setting the ticket priority choices
 TICKET_PRIORITY_CHOICES = (
@@ -140,7 +142,7 @@ class CreateTicketForm(BaseUserForm):
     subject     = forms.CharField(  label=_("Subject of your issue"), required=True,  widget=forms.TextInput)
     priority    = forms.ChoiceField(label=_("Priority"),              required=True,  widget=forms.Select,   choices=TICKET_PRIORITY_CHOICES)
     description = forms.CharField(  label=_("Describe your issue"),   required=True,  widget=forms.Textarea ) 
-    #attachments = forms.FileField(  label=_("Attachments"),           required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    attachments = forms.FileField(  label=_("Attachments"),           required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
     user = forms.DynamicChoiceField(label=_("User list"), required=False,)
 
     def handle(self, request, data):
@@ -155,21 +157,48 @@ class CreateTicketForm(BaseUserForm):
         description = data['description']
         priority    = data['priority']
         user        = data['user']
-        #files       = request.FILES.getlist('attachments')
+        files       = request.FILES.getlist('attachments')
+
+        folder = 'images'
+        BASE_PATH = '/tmp/'
+
+        #Initializing     
+        files1 = []
+
+        #Create the folder if it doesn't exist.
+        try:
+            os.mkdir(os.path.join(BASE_PATH, folder))
+        except:
+            pass
+
+        for f in files:
+            uploaded_filename = f.name
+            full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
+            fout = open(full_filename, 'wb+')
+            file_content = ContentFile(f.read())
+                
+            #Iterate through the chunks.
+            for chunk in file_content.chunks():
+               fout.write(chunk)
+            fout.close()
+            files1.append(str(full_filename))
+        
+        zenpy_obj = zendesk_api.Zendesk(request)
 
         # Okay, now we need to call our zenpy to create the 
         # ticket, with admin credential, on behalf of user
         try:
             zendesk = zendesk_api.Zendesk(self.request)
+            #upload_instance = zendesk.create_attachment(files)
             # First if there is any file, then we need to
             # attach those
             # Currently our zenpy object is not supporting 
             # attachment. Need to decide later
             #if len(files):
             #    for f in files:
-            #        zendesk.create_attachment(f)
-            #        #f.save()
-            #        print f.__dict__
+                     #zendesk.create_attachment(f)
+            #        f.save()
+            #         print f.__dict__
             
             api_data = {
                 "subject": subject,
@@ -179,8 +208,14 @@ class CreateTicketForm(BaseUserForm):
             }
             
             #Calling the method to create the tickets
-            ticket_audit = zendesk.create_ticket(api_data, request)
+            ticket_audit = zendesk.create_ticket(api_data, request)           
             ticket = ticket_audit.ticket
+
+            #If attachments are present during ticket creation
+            if files1:
+                attachment_count = len(files1)
+                zendesk.create_comment(ticket.id, 'User has added %s attachments with this ticket.' % attachment_count, True, files1)
+            
             return redirect(reverse_lazy("horizon:zendesk_support_dashboard:tickets:ticket_detail", args=[ticket.id]))
         except Exception as err:
             error_message = _(str(err))
@@ -192,3 +227,4 @@ class AddCommentForm(django_forms.Form):
     | * Class to add the comments to thye tickets
     """
     comment = forms.CharField(label = _('Add Comment'), required=True, widget=forms.TextInput)
+

@@ -88,8 +88,13 @@ def get_ticket_detail(request, **kwargs):
             form = ticket_form.AddCommentForm(request.POST)
             if form.is_valid():
                 comment = request.POST.get('comment')
-                files = handle_uploaded_file(request)
-               
+
+                #Handle uploaded files if present
+                if request.FILES:
+                    files = handle_uploaded_file(request)
+                else:
+                    files = []
+
                 privacy = request.POST.get('comment_privacy')
                 zenpy_obj.create_comment(ticket_id,  comment, privacy, files)
                 return HttpResponseRedirect(reverse_lazy('horizon:zendesk_support_dashboard:tickets:ticket_detail', args=[ticket_id]))
@@ -99,10 +104,10 @@ def get_ticket_detail(request, **kwargs):
         #Check if role_check has been set in the session
         if request.session.get('role_check', False):
             role_check_flag = request.session['role_check']
-        
+
         ticket_detail   = zenpy_obj.get_ticket_detail(ticket_id)
         ticket_comments = zenpy_obj.get_ticket_comments(ticket_id)
-
+        
         context = {
             "page_title": ticket_detail.subject,
             "ticket":     ticket_detail,
@@ -134,25 +139,22 @@ def handle_uploaded_file(request):
     #Initializing     
     files = []
     folder = 'images'
-    uploaded_filename = request.FILES['attachment'].name
     BASE_PATH = '/tmp/'
- 
-    #Create the folder if it doesn't exist.
-    try:
-        os.mkdir(os.path.join(BASE_PATH, folder))
-    except:
-        pass
+    files1 = []
 
-    #Save the uploaded file inside that folder.
-    full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
-    fout = open(full_filename, 'wb+')
-    file_content = ContentFile( request.FILES['attachment'].read() )
+    if request.method == 'POST' and request.FILES['attachment']:
 
-    #Iterate through the chunks.
-    for chunk in file_content.chunks():
-        fout.write(chunk)
-    fout.close()
+        files1 = request.FILES.getlist('attachment')
+        for f in files1:
+            uploaded_filename = f.name
+            full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
+            fout = open(full_filename, 'wb+')
+            file_content = ContentFile(f.read())
 
-    files.append(str(full_filename))
-    return files
+            #Iterate through the chunks.
+            for chunk in file_content.chunks():
+               fout.write(chunk)
+            fout.close()
+            files.append(str(full_filename))
+        return files
 

@@ -321,7 +321,7 @@ class Zendesk:
         rnd = random.SystemRandom()
         return "".join(rnd.choice(chars) for i in range(pass_length))
 
-    def create_attachment(self, tfile):
+    def create_attachment(self, files = []):
         """
         # | Function to add attachment (Currently this is only for upload)
         # | 
@@ -330,9 +330,19 @@ class Zendesk:
         # | @Created tocken
         # | Currently this func is not working
         """
-        attach = Attachment(tfile)
+        #Looping through each file and uploading them
+        token_list = []
+        for f in files:
+            name = os.path.basename(f)
+            upload_instance = self._zenpy.attachments.upload(fp=f, target_name = name)
+            token_list.append(upload_instance.token)
+
+            #Delete the file after upload since it's of no further use
+            os.remove(f)
+
+        return token_list
         #return self._zenpy.attachments.upload(tfile)
-        return self._zenpy.attachments.upload(attach)
+        #return self._zenpy.attachments.upload(attach)
 
     def list_tickets(self, search_query = {}):
         """
@@ -422,7 +432,7 @@ class Zendesk:
             #if the submitter selected the user from the list 
             if data['user'] != '':
                 data['submitter_id'] = zendesk_user_id
-                
+          
             #Creating the ticket using the data
             ticket = Ticket(**data)
             created_ticket = self._zenpy.tickets.create(ticket)
@@ -450,26 +460,29 @@ class Zendesk:
         
         author_id = user_id
 
-        #Initializing
-        token_list = []
-        
-        #Looping through each file and uploading them
-        for f in files:
-            name = os.path.basename(f)
-            upload_instance = self._zenpy.attachments.upload(fp=f, target_name = name)
-            token_list.append(upload_instance.token)
+        if not files:
+ 
+            #Passing the contents for comment creation
+            #We set the comment privacy via the public option(Privacy options are Public reply/Internal Note) 
+            data = {
+                "author_id": author_id,
+                "body"     : desc,
+                "public"   : privacy,
+            }
 
-            #Delete the file after upload since it's of no further use
-            os.remove(f)
+        else:
 
-        #Passing the contents for comment creation
-        #We set the comment privacy via the public option(Privacy options are Public reply/Internal Note) 
-        data = {
-            "author_id": author_id,
-            "body"     : desc,
-            "public"   : privacy,
-            "uploads"  : token_list
-        }
+            #Initializing
+            token_list = self.create_attachment(files)
+
+            #Passing the contents for comment creation
+            #We set the comment privacy via the public option(Privacy options are Public reply/Internal Note) 
+            data = {
+                "author_id": author_id,
+                "body"     : desc,
+                "public"   : privacy,
+                "uploads"  : token_list
+            }
 
         try:
             comment = Comment(**data)

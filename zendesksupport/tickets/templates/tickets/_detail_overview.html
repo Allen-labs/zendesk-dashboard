@@ -82,7 +82,8 @@
             </div>
         </div>
     </div>
-    <div class="row">
+
+   <div class="row">
         <div class="col-md-12 ticket-detail-section">
             <div class="ticket-description-title">
                 <strong>Description</strong>
@@ -91,6 +92,9 @@
                 {{ ticket.description }}
             </div>
         </div>
+    </div>
+    <div class="row">
+
     </div>
 </div>
 <div class="container add-comment-form-container">
@@ -111,7 +115,7 @@
                     
                     <!-- Newly added for attachment section -->
                     <div class="attachment_upload_section" style= "margin-top: 1%; margin-bottom: 1%;">
-                        <input type="file" name="attachment" />
+                        <input type="file" name="attachment" multiple />
                     </div>
 
                 </div>
@@ -138,7 +142,7 @@
                         <div class="comment-attachment">
                             <ul class="attachments">
                                 {% for file in comment.attachments %}
-                                    <li style ="background-color: #f4f4f4; width: 112px; line-height: 16px; border-radius: 4px; overflow: hidden; padding: 4px 10px; display: inline-block;">
+                                    <li style ="background-color: #f4f4f4; width: auto; line-height: 16px; border-radius: 4px; overflow: hidden; padding: 4px 10px; display: inline-block;">
                                         <a class="attachment" style="padding: 4px 8px;" href="{{file.content_url}}">
                                             <i class="fa fa-file fa-lg" style = "opacity:0.2;"></i> {{ file.file_name }}
                                         </a>
@@ -162,7 +166,7 @@
                         <div class="comment-attachment">
                             <ul class="attachments">
                                 {% for file in comment.attachments %}
-                                    <li style ="background-color: #f4f4f4; width: 96px; line-height: 16px; border-radius: 4px; overflow: hidden; padding: 4px 10px; display: inline-block;">
+                                    <li style ="background-color: #f4f4f4; width: auto; line-height: 16px; border-radius: 4px; overflow: hidden; padding: 4px 10px; display: inline-block;">
                                         <a class="attachment" style="padding: 4px 8px;" href="{{file.content_url}}">
                                             <i class="fa fa-file fa-lg" style = "opacity:0.2;"></i> {{ file.file_name }}
                                         </a>
@@ -174,7 +178,7 @@
 
                 </div>
              </div>
-            {% endif %}
+          {% endif %}
         {% endif %}
     {% endfor %}
 </div>
