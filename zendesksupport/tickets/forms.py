@@ -170,7 +170,7 @@ class CreateTicketForm(BaseUserForm):
             os.mkdir(os.path.join(BASE_PATH, folder))
         except:
             pass
-
+        '''
         #Looping through each file
         for file in files:
             uploaded_filename = file.name
@@ -187,10 +187,33 @@ class CreateTicketForm(BaseUserForm):
             attachment_list.append(str(full_filename))
         
         zenpy_obj = zendesk_api.Zendesk(request)
-
+        '''
         # Okay, now we need to call our zenpy to create the 
         # ticket, with admin credential, on behalf of user
         try:
+            
+            #Looping through each file
+            for file in files:
+                uploaded_filename = file.name
+                uploaded_filesize = file.size
+                if file.size >= 1000000:
+                    raise Exception('%s is too large. Please attach files that are less than 1MB.' % uploaded_filename) 
+          
+                full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
+                fout = open(full_filename, 'wb+')
+                file_content = ContentFile(file.read())
+
+                #Iterate through the chunks.
+                for chunk in file_content.chunks():
+                   fout.write(chunk)
+                fout.close()
+
+                #Inserting the files to list
+                attachment_list.append(str(full_filename))
+
+                zenpy_obj = zendesk_api.Zendesk(request)
+
+
             zendesk = zendesk_api.Zendesk(self.request)
 
             #Setting the data to be passed for ticket creation
