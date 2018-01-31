@@ -28,7 +28,6 @@ from openstack_dashboard.dashboards.zendesksupport import api
 from django.conf import settings
 import os
 from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
 
 class IndexView(tabs.TabbedTableView):
     """
@@ -138,18 +137,19 @@ def handle_uploaded_file(request):
 
     #Initializing     
     files = []
-    folder = 'images'
+    folder = 'zendesk_user_uploads'
     BASE_PATH = '/tmp/'
-    files1 = []
+    attachment_list = []
 
+    #Enter the loop only if attachments are present
     if request.method == 'POST' and request.FILES['attachment']:
 
-        files1 = request.FILES.getlist('attachment')
-        for f in files1:
-            uploaded_filename = f.name
+        attachment_list = request.FILES.getlist('attachment')
+        for file in attachment_list:
+            uploaded_filename = file.name
             full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
             fout = open(full_filename, 'wb+')
-            file_content = ContentFile(f.read())
+            file_content = ContentFile(file.read())
 
             #Iterate through the chunks.
             for chunk in file_content.chunks():

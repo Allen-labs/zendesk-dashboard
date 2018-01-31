@@ -325,24 +325,23 @@ class Zendesk:
         """
         # | Function to add attachment (Currently this is only for upload)
         # | 
-        # | @Arguments: Uploaded File
-        # |
-        # | @Created tocken
-        # | Currently this func is not working
+        # | @Arguments: files - list of uploaded files
+        # | @Return: a list of token after uploading the attachments to zendesk
         """
-        #Looping through each file and uploading them
+        
+        #Initializing
         token_list = []
-        for f in files:
-            name = os.path.basename(f)
-            upload_instance = self._zenpy.attachments.upload(fp=f, target_name = name)
+        
+        #Looping through each file and uploading them
+        for file in files:
+            name = os.path.basename(file)
+            upload_instance = self._zenpy.attachments.upload(fp=file, target_name = name)
             token_list.append(upload_instance.token)
 
             #Delete the file after upload since it's of no further use
-            os.remove(f)
+            os.remove(file)
 
         return token_list
-        #return self._zenpy.attachments.upload(tfile)
-        #return self._zenpy.attachments.upload(attach)
 
     def list_tickets(self, search_query = {}):
         """
@@ -460,6 +459,7 @@ class Zendesk:
         
         author_id = user_id
 
+        #If no attachments are present
         if not files:
  
             #Passing the contents for comment creation
@@ -469,14 +469,15 @@ class Zendesk:
                 "body"     : desc,
                 "public"   : privacy,
             }
-
         else:
-
-            #Initializing
+            
+            #Enter this loop if there are attachments
+            #Fetching the token list by passing the list of files
             token_list = self.create_attachment(files)
 
             #Passing the contents for comment creation
-            #We set the comment privacy via the public option(Privacy options are Public reply/Internal Note) 
+            #We set the comment privacy via the public option(Privacy options are Public reply/Internal Note)
+            #We also pass the token list via uploads option
             data = {
                 "author_id": author_id,
                 "body"     : desc,
