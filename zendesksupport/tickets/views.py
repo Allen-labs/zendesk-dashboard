@@ -74,46 +74,80 @@ def get_ticket_detail(request, **kwargs):
     # |     HTTPResponse Object
     """
     ticket_id = kwargs['ticket_id']
+
     try:
         zenpy_obj = api.Zendesk(request)
         
         #Initializing
         role_check_flag = False
+    
+        #Initializing     
+        files = []
+        
+        #Setting the location where the uploads are to be stored temporarily
+        folder    = 'zendesk_user_uploads'
+        BASE_PATH = '/tmp/'
+        attachment_list = []
 
         if request.method == "POST":
-
             # If the request method is POST
             # then we need to call for addCommentForm
             form = ticket_form.AddCommentForm(request.POST)
+               
             if form.is_valid():
-                comment = request.POST.get('comment')
+                    comment = request.POST.get('comment')
 
-                #Handle uploaded files if present
-                if request.FILES:
-                    files = handle_uploaded_file(request)
-                else:
-                    files = []
+                    #Handle uploaded files if present
+                    if request.FILES:
+                        #files = handle_uploaded_file(request)
 
-                privacy = request.POST.get('comment_privacy')
-                zenpy_obj.create_comment(ticket_id,  comment, privacy, files)
-                return HttpResponseRedirect(reverse_lazy('horizon:zendesk_support_dashboard:tickets:ticket_detail', args=[ticket_id]))
+                        #Enter the loop only if attachments are present
+                        if request.method == 'POST' and request.FILES['attachment']:
+                            try:
+                                attachment_list = request.FILES.getlist('attachment')
+                                for file in attachment_list:
+                                    uploaded_filename = file.name
+                                    if file.size > 1000000:
+                                        raise Exception('%s is too large. Only attachments less than 1MB are accepted.' % uploaded_filename)
+                      
+                                    full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
+                                    fout = open(full_filename, 'wb+')
+                                    file_content = ContentFile(file.read())
+
+                                    #Iterate through the chunks.
+                                    for chunk in file_content.chunks():
+                                        fout.write(chunk)
+                                    fout.close()
+                                    files.append(str(full_filename))
+
+                            except Exception as err:
+                                error_message = _(str(err))
+                                exceptions.handle(request, error_message)
+                    else:
+                        files = []
+
+                    privacy = request.POST.get('comment_privacy')
+                    zenpy_obj.create_comment(ticket_id,  comment, privacy, files)
+                    return HttpResponseRedirect(reverse_lazy('horizon:zendesk_support_dashboard:tickets:ticket_detail', args=[ticket_id]))
             else:
                 exceptions.handle(request, form.errors)
-
+                    
         #Check if role_check has been set in the session
         if request.session.get('role_check', False):
             role_check_flag = request.session['role_check']
 
         ticket_detail   = zenpy_obj.get_ticket_detail(ticket_id)
         ticket_comments = zenpy_obj.get_ticket_comments(ticket_id)
-        
+
         context = {
             "page_title": ticket_detail.subject,
             "ticket":     ticket_detail,
             "comments":   ticket_comments,
             "role_check_flag" : role_check_flag
         }
+
         return render(request, 'zendesk_support_dashboard/tickets/ticket_detail.html', context)
+    
     except api.ZendeskError as err:
         if err.code == 403:
             context = {
@@ -128,7 +162,7 @@ def get_ticket_detail(request, **kwargs):
         else:
             context = {
                 "page_title": "500:Unknown Error Occured",
-                "error": "Unkown error occured. Unable to fetch ticket detail.."
+                "error": "Unknown error occurred. Unable to fetch ticket detail.."
             }
 
         return render(request, 'zendesk_support_dashboard/tickets/ticket_detail.html', context)
@@ -147,6 +181,10 @@ def handle_uploaded_file(request):
         attachment_list = request.FILES.getlist('attachment')
         for file in attachment_list:
             uploaded_filename = file.name
+            if file.size > 1000:
+                raise Exception('%s is too large. Please attach files that are less than 1MB.' % uploaded_filename)
+                #break
+                      
             full_filename = os.path.join(BASE_PATH, folder, uploaded_filename)
             fout = open(full_filename, 'wb+')
             file_content = ContentFile(file.read())
@@ -157,4 +195,3 @@ def handle_uploaded_file(request):
             fout.close()
             files.append(str(full_filename))
         return files
-

@@ -142,7 +142,7 @@ class CreateTicketForm(BaseUserForm):
     subject     = forms.CharField(  label=_("Subject of your issue"), required=True,  widget=forms.TextInput)
     priority    = forms.ChoiceField(label=_("Priority"),              required=True,  widget=forms.Select,   choices=TICKET_PRIORITY_CHOICES)
     description = forms.CharField(  label=_("Describe your issue"),   required=True,  widget=forms.Textarea ) 
-    attachments = forms.FileField(  label=_("Attachments"),           required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    attachments = forms.FileField(  label=_("Attachments (Max size 1MB)"),           required=False, widget=forms.ClearableFileInput(attrs={'multiple': True}))
     user = forms.DynamicChoiceField(label=_("User list"), required=False,)
 
     def handle(self, request, data):
