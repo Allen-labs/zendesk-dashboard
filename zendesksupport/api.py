@@ -168,9 +168,9 @@ class Zendesk:
         # | Returns None
         if request.session.get('zendesksupport', None):
             zendesksupport_session = request.session['zendesksupport']
-            if ( 'ks_user_email' in zendesksupport_session) and ('tenant_id' in zendesksupport_session):
-                if zendesksupport_session['tenant_id'] == request.user.project_id:
-                    return None
+            #if ( 'ks_user_email' in zendesksupport_session) and ('tenant_id' in zendesksupport_session):
+            #    if zendesksupport_session['tenant_id'] == request.user.project_id:
+            #        return None
         proj_id            = getattr(settings, 'KEYSTONE_ADMIN_PROJECT_ID',           '')
         proj_name          = getattr(settings, 'KEYSTONE_ADMIN_PROJECT_NAME',         '')
         proj_domain_id     = getattr(settings, 'KEYSTONE_ADMIN_PROJECT_DOMAIN_ID',    '')
